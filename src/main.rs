@@ -1,6 +1,7 @@
 use std::io::{stdout, BufWriter, Write};
 use std::sync::{Arc, Mutex};
 use std::thread;
+use crossterm::style::Stylize;
 
 fn main() {
     let numbers = Arc::new(Mutex::new((0..).into_iter()));
@@ -25,9 +26,12 @@ fn main() {
 
                 for n in nums {
                     if is_prime(n) {
-                        writeln!(bufstdout, "{}", n).ok();
+                        // output to bufstdout using:
+                        // [THREAD <thread_id>] <number> is prime!
+                        writeln!(bufstdout, "{} {} is prime!", format!("[THREAD {:?}]", thread::current().id().to_owned()).green().bold(), n.to_string().blue().bold()).unwrap();
                         let mut c = count.lock().unwrap();
                         if *c == 1000000 {
+                            println!("{}", "All done!".green().bold());
                             std::process::exit(0);
                         }
                         *c += 1;
